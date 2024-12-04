@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  organization-service:
+    build: ./organization-service
+    container_name: organization-service
+    depends_on:
+      - main-db
+    networks:
+      - backend
+    ports:
+      - "8080:8080"
+      - "8181:8181"
+      - "4848:4848"
+
+  manager-service:
+    build: ./manager-service/manager-service
+    container_name: manager-service
+    depends_on:
+      - organization-service
+    networks:
+      - backend
+    ports:
+      - "8585:8080"
+
+  main-db:
+    image: postgres
+    container_name: main-db
+    environment:
+      POSTGRES_DB: "soa"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    command: postgres -p 5432
+    volumes:
+      - pg_data:/var/lib/postgresql
+    networks:
+      - backend
+    ports:
+      - "5433:5432"
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  pg_data:
+    driver: local

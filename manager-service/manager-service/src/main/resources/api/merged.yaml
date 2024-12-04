@@ -1,0 +1,15 @@
+---
+servers:
+- url: "http://localhost:8080"
+openapi: "3.0.3"
+paths:
+  /orgmanager/fire/all/{organizationId}:
+    $ref: "./api.yaml#/paths/~1orgmanager~1fire~1all~1{organizationId}"
+  /ping:
+    $ref: "./api.yaml#/paths/~1ping"
+  /orgmanager/hire/{organizationId}:
+    $ref: "./api.yaml#/paths/~1orgmanager~1hire~1{organizationId}"
+info:
+  title: "merged spec"
+  description: "merged spec"
+  version: "1.0.0"

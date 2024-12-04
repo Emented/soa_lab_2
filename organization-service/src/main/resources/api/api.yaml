@@ -1,0 +1,703 @@
+openapi: 3.0.3
+info:
+  title: Organization operations API
+  version: LATEST
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+tags:
+  - name: utility
+    description: Получение состояния приложения
+  - name: organization
+    description: API для работы с организациями
+  - name: organization-utils
+    description: API утилит для работы с организациями
+  - name: employee
+    description: API для работы с сотрудниками
+paths:
+  /ping:
+    get:
+      tags:
+        - utility
+      operationId: ping
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+
+  /organizations/{organizationId}:
+    get:
+      tags:
+        - organization
+      summary: Получение организации по идентификатору
+      operationId: getOrganizationById
+      parameters:
+        - in: path
+          description: Идентификатор организации
+          name: organizationId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - organization
+      summary: Обновление организации по идентификатору
+      operationId: updateOrganizationById
+      parameters:
+        - in: path
+          description: Идентификатор организации
+          name: organizationId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - organization
+      summary: Удаление организации по идентификатору
+      operationId: deleteOrganizationById
+      parameters:
+        - in: path
+          description: Идентификатор организации
+          name: organizationId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /organizations:
+    post:
+      tags:
+        - organization
+      summary: Создание организации
+      operationId: createOrganization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /organizations/search:
+    post:
+      tags:
+        - organization
+      summary: Поиск организаций с сортировкой, фильтрацией и пагинацией
+      operationId: searchOrganizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationsSearchRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationsWithPagerResponse'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+
+
+  /organizations/min/type:
+    get:
+      tags:
+        - organization-utils
+      summary: Получение организации организации с минимальным типом
+      operationId: getMinOrganizationByType
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /organizations/count/official-address/{officialAddress}:
+    get:
+      tags:
+        - organization-utils
+      summary: Получение количества организаций с определенным адресом
+      operationId: getOrganizationCountByOfficialAddress
+      parameters:
+        - in: path
+          description: Адрес для подсчета
+          name: officialAddress
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /organizations/type/{type}:
+    delete:
+      tags:
+        - organization-utils
+      summary: Удаление организаций по типу
+      operationId: deleteOrganizationsByType
+      parameters:
+        - in: path
+          description: Тип организации
+          name: type
+          required: true
+          schema:
+            $ref: '#/components/schemas/OrganizationType'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /employee:
+    post:
+      tags:
+        - employee
+      summary: Создание сотрудника
+      operationId: createEmployee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /employee/{employeeId}:
+    get:
+      tags:
+        - employee
+      summary: Получение сотрудника по идентификатору
+      operationId: getEmployeeById
+      parameters:
+        - in: path
+          description: Идентификатор сотрудника
+          name: employeeId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - employee
+      summary: Удаление сотрудника по идентификатору
+      operationId: deleteEmployeeById
+      parameters:
+        - in: path
+          description: Идентификатор сотрудника
+          name: employeeId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Organization:
+      type: object
+      description: Организация
+      required:
+        - id
+        - name
+        - coordinates
+        - creationDate
+        - officialAddress
+        - employees
+      properties:
+        id:
+          description: Идентификатор
+          type: integer
+          format: int64
+          minimum: 1
+        name:
+          description: Название
+          type: string
+          minLength: 1
+        coordinates:
+          description: Координаты
+          $ref: '#/components/schemas/Coordinates'
+        creationDate:
+          description: Дата создания
+          type: string
+          format: date-time
+        annualTurnover:
+          description: Ежегодный оборот
+          type: integer
+          minimum: 1
+        type:
+          description: Тип
+          $ref: '#/components/schemas/OrganizationType'
+        officialAddress:
+          description: Официальный адрес
+          $ref: '#/components/schemas/Address'
+        employees:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employee'
+
+    Employee:
+      type: object
+      description: Работник
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: Идентификатор
+          type: integer
+          format: int64
+          minimum: 1
+        name:
+          description: Название
+          type: string
+          minLength: 1
+
+    EmployeeRequest:
+      type: object
+      description: Работник
+      required:
+        - name
+      properties:
+        name:
+          description: Название
+          type: string
+          minLength: 1
+        organizationId:
+          description: Идентификатор организации
+          type: integer
+          format: int64
+          minimum: 1
+
+    OrganizationRequest:
+      type: object
+      description: Организация
+      required:
+        - name
+        - coordinates
+        - officialAddress
+      properties:
+        name:
+          description: Название
+          type: string
+          minLength: 1
+        coordinates:
+          description: Координаты
+          $ref: '#/components/schemas/Coordinates'
+        annualTurnover:
+          description: Ежегодный оборот
+          type: integer
+          minimum: 1
+        type:
+          description: Тип
+          $ref: '#/components/schemas/OrganizationType'
+        officialAddress:
+          description: Официальный адрес
+          $ref: '#/components/schemas/Address'
+
+    Coordinates:
+      type: object
+      description: Координаты
+      required:
+        - x
+        - y
+      properties:
+        x:
+          description: Х координата
+          type: integer
+          format: int64
+          minimum: -394
+        y:
+          description: Y координата
+          type: number
+          format: float
+
+    Address:
+      type: object
+      description: Адрес
+      required:
+        - zipCode
+      properties:
+        zipCode:
+          description: Почтовый индекс
+          type: string
+          maxLength: 18
+
+    OrganizationType:
+      type: string
+      enum:
+        - PUBLIC
+        - GOVERNMENT
+        - TRUST
+        - PRIVATE_LIMITED_COMPANY
+        - OPEN_JOINT_STOCK_COMPANY
+
+    Pager:
+      type: object
+      description: Пагинатор
+      required:
+        - totalPages
+        - pageNum
+      properties:
+        totalPages:
+          description: Сколько всего страниц
+          type: integer
+        pageNum:
+          description: Номер текущей страницы
+          type: integer
+
+    OrganizationsSearchRequest:
+      type: object
+      description: Поисковый запрос организаций
+      required:
+        - sortingStrategies
+        - filterStrategies
+      properties:
+        page:
+          description: Номер страницы
+          type: integer
+          default: 0
+          minimum: 0
+        size:
+          description: Размер страницы
+          type: integer
+          default: 10
+          minimum: 1
+        sortingStrategies:
+          description: Список с описанием фильтрации
+          type: array
+          items:
+            $ref: '#/components/schemas/SortingStrategy'
+        filterStrategies:
+          description: Список с описанием фильтрации
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterStrategy'
+
+    OrganizationField:
+      description: Колонка организации для фильтрации и сортировки
+      type: string
+      enum:
+        - ID
+        - NAME
+        - CREATION_DATE
+        - ANNUAL_TURNOVER
+        - TYPE
+        - OFFICIAL_ADDRESS
+
+    SortingType:
+      description: Тип сортировки
+      type: string
+      enum:
+        - asc
+        - desc
+
+    SortingStrategy:
+      description: Стратегия сортировки
+      required:
+        - sortingType
+        - sortingColumn
+      type: object
+      properties:
+        sortingType:
+          $ref: '#/components/schemas/SortingType'
+        sortingColumn:
+          $ref: '#/components/schemas/OrganizationField'
+
+    FilterType:
+      description: Тип фильтрации
+      type: string
+      enum:
+        - contains
+        - more
+        - moreOrEquals
+        - less
+        - lessOrEquals
+        - equals
+
+    FilterStrategy:
+      description: Стратегия фильтрации
+      required:
+        - filterColumn
+        - filterType
+        - filterValue
+      type: object
+      properties:
+        filterColumn:
+          $ref: '#/components/schemas/OrganizationField'
+        filterType:
+          $ref: '#/components/schemas/FilterType'
+        filterValue:
+          description: Значение которое будет использоваться для фильтрации
+          type: string
+          minLength: 1
+
+    OrganizationsWithPagerResponse:
+      type: object
+      required:
+        - cities
+        - pager
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Organization'
+        pager:
+          $ref: '#/components/schemas/Pager'
+
+    CountResponse:
+      type: object
+      required:
+        - message
+      properties:
+        count:
+          type: integer
+          format: int64
+          description: Число записей
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+        - statusCode
+      properties:
+        code:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Описание ошибки
+        statusCode:
+          type: integer
+          description: HTTP-код статуса
+
+

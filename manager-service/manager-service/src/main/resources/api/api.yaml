@@ -1,0 +1,140 @@
+openapi: 3.0.3
+info:
+  title: Organization manager API
+  version: LATEST
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+tags:
+  - name: utility
+    description: Получение состояния приложения
+  - name: organization-manager
+    description: API для менеджеров организаций
+paths:
+  /ping:
+    get:
+      tags:
+        - utility
+      operationId: ping
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+
+  /orgmanager/fire/all/{organizationId}:
+    post:
+      tags:
+        - organization-manager
+      summary: Уволить всех сотрудников
+      operationId: fireAllOrganizationEmployees
+      parameters:
+        - in: path
+          description: Идентификатор организации
+          name: organizationId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orgmanager/hire/{organizationId}:
+    post:
+      tags:
+        - organization-manager
+      summary: Нанять нового сотрудника в организацию
+      operationId: hireEmployeeToOrganization
+      parameters:
+        - in: path
+          description: Идентификатор организации
+          name: organizationId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+components:
+  schemas:
+    Employee:
+      type: object
+      description: Работник
+      required:
+        - name
+      properties:
+        id:
+          description: Идентификатор
+          type: integer
+          format: int64
+          minimum: 1
+        name:
+          description: Название
+          type: string
+          minLength: 1
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+        - statusCode
+      properties:
+        code:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Описание ошибки
+        statusCode:
+          type: integer
+          description: HTTP-код статуса
+
+
+

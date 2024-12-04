@@ -1,0 +1,27 @@
+---
+servers:
+- url: "http://localhost:8080"
+openapi: "3.0.3"
+paths:
+  /organizations:
+    $ref: "./api.yaml#/paths/~1organizations"
+  /organizations/{organizationId}:
+    $ref: "./api.yaml#/paths/~1organizations~1{organizationId}"
+  /organizations/search:
+    $ref: "./api.yaml#/paths/~1organizations~1search"
+  /organizations/count/official-address/{officialAddress}:
+    $ref: "./api.yaml#/paths/~1organizations~1count~1official-address~1{officialAddress}"
+  /employee/{employeeId}:
+    $ref: "./api.yaml#/paths/~1employee~1{employeeId}"
+  /organizations/type/{type}:
+    $ref: "./api.yaml#/paths/~1organizations~1type~1{type}"
+  /ping:
+    $ref: "./api.yaml#/paths/~1ping"
+  /organizations/min/type:
+    $ref: "./api.yaml#/paths/~1organizations~1min~1type"
+  /employee:
+    $ref: "./api.yaml#/paths/~1employee"
+info:
+  title: "merged spec"
+  description: "merged spec"
+  version: "1.0.0"

@@ -1,0 +1,3 @@
+<glassfish-web-app>
+    <enable-implicit-cdi>false</enable-implicit-cdi>
+</glassfish-web-app>
