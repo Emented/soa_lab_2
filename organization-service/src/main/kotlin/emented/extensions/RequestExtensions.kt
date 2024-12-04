@@ -61,8 +61,8 @@ fun OrganizationType.toModel(): DomainOrganizationType {
 
 fun OrganizationsSearchRequest.toModel(): DomainOrganizationsSearchRequest {
     return DomainOrganizationsSearchRequest(
-        sortingStrategies = sortingStrategies.map { it.toModel() },
-        filterStrategies = filterStrategies.map { it.toModel() },
+        sortingStrategies = sortingStrategies.map { it.toModel() }.distinctBy { it.sortingColumn },
+        filterStrategies = filterStrategies.map { it.toModel() }.distinctBy { it.filterColumn },
         page = page!!,
         size = propertySize!!,
     )

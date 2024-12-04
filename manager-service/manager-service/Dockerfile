@@ -5,4 +5,4 @@ COPY keys/manager-service.jks manager-service.jks
 COPY keys/organization-service.crt organization-service.crt
 RUN keytool -import -trustcacerts -alias organization-service -file organization-service.crt -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt
 
-ENTRYPOINT ["java", "-jar", "-Djetty.sslContext.sniRequired=false", "-Djetty.ssl.sniHostCheck=false", "-Djetty.ssl.sniRequired=false", "manager-service.jar"]
+ENTRYPOINT ["java", "-jar", "-Djavax.net.debug=all", "-Djavax.net.ssl.trustStore=classpath:manager-service.jks", "-Djavax.net.ssl.trustStorePassword=admin_pass", "manager-service.jar"]

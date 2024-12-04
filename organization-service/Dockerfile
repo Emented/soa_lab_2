@@ -1,6 +1,6 @@
 FROM payara/server-full:6.2024.9-jdk17
 
-COPY keys/organization-service.jks /opt/payara/appserver/glassfish/domains/domain1/config
+COPY keys/organization-service.jks /opt/payara/appserver/glassfish/domains/domain1
 COPY keys/manager-service.crt manager-service.crt
 
 USER root

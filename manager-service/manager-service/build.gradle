@@ -30,6 +30,7 @@ dependencies {
     }
 
     implementation 'jakarta.servlet:jakarta.servlet-api'
+    implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 
     implementation 'com.unboundid:unboundid-ldapsdk:7.0.1'
 

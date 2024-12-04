@@ -1,4 +1,6 @@
 package emented.model.client
 
-class EmployeeResponse {
-}
+data class EmployeeResponse(
+    val id: Long,
+    val name: String
+)

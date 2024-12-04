@@ -1,34 +1,33 @@
 package emented.service.impl
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import emented.api.NotFoundException
 import emented.model.client.EmployeeRequest
+import emented.model.client.EmployeeResponse
 import emented.model.client.Organization
 import emented.model.domain.Employee
 import emented.service.OrganizationManagerService
 import org.springframework.stereotype.Service
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import org.springframework.web.client.RestTemplate
 
 @Service
 class OrganizationManagerServiceImpl(
-    private val organizationServiceHttpClient: HttpClient,
-    private val objectMapper: ObjectMapper
+    private val restTemplate: RestTemplate,
 ) : OrganizationManagerService {
     override fun fireAllEmployees(organizationId: Long) {
-        val request = HttpRequest.newBuilder()
-            .GET()
-            .uri(URI.create(GET_ORGANIZATION_BY_ID_URL.format(organizationId)))
-            .build()
+        val response = restTemplate.getForEntity<Organization>(
+            GET_ORGANIZATION_BY_ID_URL.format(organizationId),
+            Organization::class.java
+        )
 
-        val response = organizationServiceHttpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        if (response?.statusCode() == 404) {
+        if (response.statusCode.value() == 404) {
             throw NotFoundException("Organization with id $organizationId not found")
         }
 
-        var organization = objectMapper.readValue(response.body(), Organization::class.java)
+        if (response.statusCode.isError) {
+            throw RuntimeException("Failed to get organization with id $organizationId")
+        }
+
+        var organization = response.body ?: throw NotFoundException("Organization with id $organizationId not found")
 
         organization.employees.forEach {
             fireEmployee(requireNotNull(it.id))
@@ -37,28 +36,19 @@ class OrganizationManagerServiceImpl(
 
     override fun hireEmployee(organizationId: Long, employee: Employee) {
         val employeeRequest = EmployeeRequest(employee.name, organizationId)
-        val request = HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(employeeRequest)))
-            .header("Content-Type", "application/json")
-            .uri(URI.create(HIRE_EMPLOYEE_URL))
-            .build()
+        val response = restTemplate.postForEntity<EmployeeResponse>(
+            HIRE_EMPLOYEE_URL,
+            employeeRequest,
+            EmployeeResponse::class.java
+        )
 
-        val response = organizationServiceHttpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        if (response?.statusCode() != 200) {
+        if (response.statusCode.isError) {
             throw RuntimeException("Failed to hire employee $employee")
         }
     }
 
     private fun fireEmployee(employeeId: Long) {
-        val request = HttpRequest.newBuilder()
-            .DELETE()
-            .uri(URI.create(FIRE_EMPLOYEE_URL.format(employeeId)))
-            .build()
-
-        val response = organizationServiceHttpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        if (response?.statusCode() != 200) {
-            throw RuntimeException("Failed to fire employee with id $employeeId")
-        }
+        restTemplate.delete(FIRE_EMPLOYEE_URL.format(employeeId))
     }
 
     companion object {
