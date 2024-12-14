@@ -52,7 +52,7 @@ class OrganizationManagerServiceImpl(
     }
 
     companion object {
-        private const val ORGANIZATION_SERVICE_URL = "https://organization-service:8181/organization-service"
+        private const val ORGANIZATION_SERVICE_URL = "https://organization-service:8080"
         private const val GET_ORGANIZATION_BY_ID_URL = "$ORGANIZATION_SERVICE_URL/organizations/%d"
         private const val FIRE_EMPLOYEE_URL = "$ORGANIZATION_SERVICE_URL/employee/%d"
         private const val HIRE_EMPLOYEE_URL = "$ORGANIZATION_SERVICE_URL/employee"

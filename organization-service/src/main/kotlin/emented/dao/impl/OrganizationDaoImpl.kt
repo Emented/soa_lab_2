@@ -90,7 +90,7 @@ class OrganizationDaoImpl(
         val foundOrganizations = dslContext.select(organizationFields)
             .from(ORGANIZATION)
             .where(filterStrategies.map { it.toCondition() })
-            .orderBy(sortingStrategies.map { it.toOr>derBy() })
+            .orderBy(sortingStrategies.map { it.toOrderBy() })
             .limit(size)
             .offset(offset)
             .fetch {

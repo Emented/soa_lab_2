@@ -1,0 +1,25 @@
+defaults
+  mode http
+  timeout client 10s
+  timeout connect 5s
+  timeout server 10s
+  timeout http-request 10s
+  log global
+
+frontend stats
+  bind *:8404
+  stats enable
+  stats uri /
+  stats refresh 10s
+
+frontend http_frontend
+  bind :8080
+  default_backend webservers
+
+frontend https_frontend
+  bind :8181 ssl crt /etc/ssl/certs/haproxy.pem
+  default_backend webservers
+
+backend webservers
+  balance roundrobin {{range service "organization-service"}}
+  server {{.Address}} {{.Address}}:{{.Port}} ssl verify none{{end}}

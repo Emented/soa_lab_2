@@ -1,23 +1,81 @@
 version: '3.8'
 
 services:
-  organization-service:
-    build: ./organization-service
-    container_name: organization-service
-    depends_on:
-      - main-db
+  consul:
+    image: bitnami/consul
+    container_name: consul
+    ports:
+      - 8500:8500
     networks:
       - backend
+
+  organization-service-1:
+    build: ./organization-service
+    container_name: organization-service-1
+    depends_on:
+      - main-db
+      - consul
+    environment:
+      - CONTAINER_NAME=organization-service-1
+    networks:
+      - backend
+  
+  organization-service-2:
+    build: ./organization-service
+    container_name: organization-service-2
+    depends_on:
+      - main-db
+      - consul
+    environment:
+      - CONTAINER_NAME=organization-service-2
+    networks:
+      - backend
+
+  # organization-service-3:
+  #   build: ./organization-service
+  #   container_name: organization-service-3
+  #   depends_on:
+  #     - main-db
+  #     - consul
+  #   environment:
+  #     - CONTAINER_NAME=organization-service-3
+  #   networks:
+  #     - backend
+
+  # organization-service-haproxy:
+  #   image: haproxy
+  #   depends_on:
+  #     - organization-service-1
+  #     - organization-service-2
+  #   ports:
+  #     - 8404:8404
+  #     - 8282:8080
+  #     - 8181:8181
+  #   networks:
+  #     - backend
+  #   volumes:
+  #     - ./organization-service/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+  #     - ./organization-service/haproxy/haproxy.pem:/etc/ssl/certs/haproxy.pem
+
+  organization-service-haproxy:
+    build: ./organization-service/haproxy
+    depends_on:
+      - organization-service-1
+      - organization-service-2
     ports:
-      - "8080:8080"
-      - "8181:8181"
-      - "4848:4848"
+      - 8282:8080
+      - 8181:8181
+      - 8404:8404
+    environment:
+      - CONSUL_ADDRESS=consul:8500
+    networks:
+      - backend
 
   manager-service:
     build: ./manager-service/manager-service
     container_name: manager-service
     depends_on:
-      - organization-service
+      - organization-service-haproxy
     networks:
       - backend
     ports:
@@ -44,4 +102,6 @@ networks:
 
 volumes:
   pg_data:
+    driver: local
+  consul_data:
     driver: local
