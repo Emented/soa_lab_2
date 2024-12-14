@@ -56,7 +56,11 @@ class OrganizationDaoImpl(
     }
 
     override fun deleteById(id: Long): Boolean {
-        return dslContext.delete(ORGANIZATION)
+        dslContext.deleteFrom(EMPLOYEE)
+            .where(EMPLOYEE.ORGANIZATION_ID.eq(id))
+            .execute()
+
+        return dslContext.deleteFrom(ORGANIZATION)
             .where(ORGANIZATION.ID.eq(id))
             .execute() > 0
     }
@@ -86,7 +90,7 @@ class OrganizationDaoImpl(
         val foundOrganizations = dslContext.select(organizationFields)
             .from(ORGANIZATION)
             .where(filterStrategies.map { it.toCondition() })
-            .orderBy(sortingStrategies.map { it.toOrderBy() })
+            .orderBy(sortingStrategies.map { it.toOr>derBy() })
             .limit(size)
             .offset(offset)
             .fetch {
@@ -97,8 +101,18 @@ class OrganizationDaoImpl(
     }
 
     override fun deleteAllByType(type: OrganizationType): Long {
-        return dslContext.delete(ORGANIZATION)
+        val organizationIds = dslContext.select(ORGANIZATION.ID)
+            .from(ORGANIZATION)
             .where(ORGANIZATION.TYPE.eq(type.name))
+            .fetch { it.value1() }
+            .toSet()
+
+        dslContext.deleteFrom(EMPLOYEE)
+            .where(EMPLOYEE.ORGANIZATION_ID.`in`(organizationIds))
+            .execute()
+
+        return dslContext.deleteFrom(ORGANIZATION)
+            .where(ORGANIZATION.ID.`in`(organizationIds))
             .execute().toLong()
     }
 
