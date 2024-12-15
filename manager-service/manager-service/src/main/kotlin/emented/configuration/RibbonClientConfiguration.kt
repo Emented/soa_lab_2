@@ -1,5 +1,9 @@
 package emented.configuration
 
+import com.netflix.client.config.CommonClientConfigKey
+import com.netflix.client.config.DefaultClientConfigImpl.DEFAULT_CONNECT_TIMEOUT
+import com.netflix.client.config.DefaultClientConfigImpl.DEFAULT_READ_TIMEOUT
+import com.netflix.client.config.IClientConfig
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder
@@ -10,41 +14,48 @@ import org.eclipse.jetty.server.HttpConnectionFactory
 import org.eclipse.jetty.server.SecureRequestCustomizer
 import org.eclipse.jetty.server.ServerConnector
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
+import org.springframework.cloud.client.loadbalancer.LoadBalanced
+import org.springframework.cloud.netflix.ribbon.RibbonClientName
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.core.io.Resource
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.invoke
-import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.client.RestTemplate
 import javax.net.ssl.SSLContext
 
 @Configuration
-class ClientConfiguration {
+class RibbonClientConfiguration {
+
+    @RibbonClientName
+    private val name = "organization-service"
 
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http.invoke {
-            authorizeRequests {
-                authorize(anyRequest, permitAll)
-            }
-            cors { disable() }
-            csrf { disable() }
-        }
+    @Primary
+    fun ribbonClientConfig(): IClientConfig  {
+        var config = RibbonClientConfig()
+        config.loadProperties(this.name)
 
-        return http.build()
+        config.set(CommonClientConfigKey.ConnectTimeout, DEFAULT_CONNECT_TIMEOUT)
+        config.set(CommonClientConfigKey.ReadTimeout, DEFAULT_READ_TIMEOUT)
+        config.set(CommonClientConfigKey.GZipPayload, false)
+        config.set(CommonClientConfigKey.ServerListRefreshInterval, 5000)
+        config.set(CommonClientConfigKey.NIWSServerListClassName, ConsulServerList::class.java.name)
+
+        return config
     }
 
     @Bean
+    @LoadBalanced
     fun restTemplate(
         @Value("\${trust.store}") trustStore: Resource,
         @Value("\${trust.store.password}") trustStorePassword: String
-    ): RestTemplate? {
+    ): RestTemplate {
         val sslContext: SSLContext = SSLContextBuilder()
             .loadTrustMaterial(trustStore.url, trustStorePassword.toCharArray()).build()
 

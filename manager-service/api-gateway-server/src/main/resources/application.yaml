@@ -1,0 +1,51 @@
+server:
+  port: 9912
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+
+logging:
+  level:
+    reactor:
+      netty: INFO
+    org:
+      springframework:
+        cloud:
+          gateway: TRACE
+
+spring:
+  application:
+    name: api-gateway-server
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      httpclient:
+        ssl:
+          use-insecure-trust-manager: true
+        connect-timeout: 1000
+        response-timeout: 5s
+      routes:
+        - id: manager-route
+          uri: lb:https://manager-service
+          predicates:
+            - Path=/orgmanager/**
+          order: 1
+
+        - id: organization-route
+          uri: lb:https://organization-service-haproxy
+          predicates:
+            - Path=/organizations/**
+          order: 2
+
+        - id: employee-route
+          uri: lb:https://organization-service-haproxy
+          predicates:
+            - Path=/employees/**
+          order: 3

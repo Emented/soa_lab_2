@@ -76,10 +76,45 @@ services:
     container_name: manager-service
     depends_on:
       - organization-service-haproxy
+      - eureka-server
+      - config-server
     networks:
       - backend
     ports:
       - "8585:8080"
+  
+  eureka-server:
+    build: ./manager-service/eureka-server
+    container_name: eureka-server
+    depends_on:
+      config-server:
+        condition: service_healthy
+    ports:
+      - "8761:8761"
+    networks:
+      - backend
+
+  config-server:
+    build: ./manager-service/config-server
+    container_name: config-server
+    ports:
+      - "8095:8095"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8095/actuator/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend
+
+  api-gateway:
+    build: ./manager-service/api-gateway-server
+    container_name: api-gateway-server
+    ports:
+      - "9912:9912"
+    networks:
+      - backend
 
   main-db:
     image: postgres
