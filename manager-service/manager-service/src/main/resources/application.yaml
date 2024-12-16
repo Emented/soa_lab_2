@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: manager-service
+  config:
+    import: configserver:http://config-server:8095
+eureka:
+  instance:
+    hostname: manager-service
+    non-secure-port-enabled: false
+    secure-port: 8080
+    secure-port-enabled: true
+
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
+  port: 8080
+  ssl:
+    enabled: true
+    key-alias: manager-service
+    key-password: admin_pass
+    key-store: classpath:manager-service.jks
+    key-store-password: admin_pass
+    key-store-type: JKS
+
+trust:
+  store:
+    path: classpath:manager-service.jks
+    password: admin_pass
