@@ -9,12 +9,18 @@ import org.springframework.stereotype.Service
 class OrganizationManagerServiceImpl(
     private val organizationServiceClient: OrganizationServiceClient
 ) : OrganizationManagerService {
-    override fun fireAllEmployees(organizationId: Long) {
+    override fun fireAllEmployees(organizationId: Long): Boolean {
         val organization = organizationServiceClient.getOrganization(organizationId)
+
+        if (organization == null) {
+            return false
+        }
 
         organization.employees.forEach {
             organizationServiceClient.fireEmployee(requireNotNull(it.id))
         }
+
+        return true
     }
 
     override fun hireEmployee(organizationId: Long, employee: Employee) {

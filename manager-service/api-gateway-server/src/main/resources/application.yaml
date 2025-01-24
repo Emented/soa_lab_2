@@ -37,15 +37,5 @@ spring:
           predicates:
             - Path=/orgmanager/**
           order: 1
-
-        - id: organization-route
-          uri: lb:https://organization-service-haproxy
-          predicates:
-            - Path=/organizations/**
-          order: 2
-
-        - id: employee-route
-          uri: lb:https://organization-service-haproxy
-          predicates:
-            - Path=/employees/**
-          order: 3
+          filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin

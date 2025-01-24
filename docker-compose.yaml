@@ -42,21 +42,6 @@ services:
   #   networks:
   #     - backend
 
-  # organization-service-haproxy:
-  #   image: haproxy
-  #   depends_on:
-  #     - organization-service-1
-  #     - organization-service-2
-  #   ports:
-  #     - 8404:8404
-  #     - 8282:8080
-  #     - 8181:8181
-  #   networks:
-  #     - backend
-  #   volumes:
-  #     - ./organization-service/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-  #     - ./organization-service/haproxy/haproxy.pem:/etc/ssl/certs/haproxy.pem
-
   organization-service-haproxy:
     build: ./organization-service/haproxy
     depends_on:
@@ -70,6 +55,28 @@ services:
       - CONSUL_ADDRESS=consul:8500
     networks:
       - backend
+
+  mule:
+    build: ./manager-service/mule-esb
+    container_name: mule
+    platform: linux
+    depends_on:
+      - manager-service
+    ports:
+      - "8091:8081"
+    networks:
+      - backend
+
+  manager-service-haproxy:
+    build: ./manager-service/manager-haproxy
+    container_name: manager-haproxy
+    depends_on:
+      - mule
+    networks:
+      - backend
+    ports:
+      - "9092:9091"
+      - "8092:8080"
 
   manager-service:
     build: ./manager-service/manager-service
@@ -105,14 +112,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    networks:
-      - backend
-
-  api-gateway:
-    build: ./manager-service/api-gateway-server
-    container_name: api-gateway-server
-    ports:
-      - "9912:9912"
     networks:
       - backend
 

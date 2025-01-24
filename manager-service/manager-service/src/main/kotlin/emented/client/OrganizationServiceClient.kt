@@ -1,12 +1,12 @@
 package emented.client
 
-import emented.api.NotFoundException
 import emented.model.client.EmployeeRequest
 import emented.model.client.EmployeeResponse
 import emented.model.client.Organization
 import emented.model.domain.Employee
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestTemplate
 
 @Component
@@ -14,23 +14,27 @@ class OrganizationServiceClient(
     @Qualifier("mainRestTemplate") private val restTemplate: RestTemplate,
 ) {
 
-    fun getOrganization(organizationId: Long): Organization {
-        val response = restTemplate.getForEntity<Organization>(
-            GET_ORGANIZATION_BY_ID_URL.format(organizationId),
-            Organization::class.java
-        )
+    fun getOrganization(organizationId: Long): Organization? {
+        return try {
+            val response = restTemplate.getForEntity<Organization>(
+                GET_ORGANIZATION_BY_ID_URL.format(organizationId),
+                Organization::class.java
+            )
 
-        if (response.statusCode.value() == 404) {
-            throw NotFoundException("Organization with id $organizationId not found")
+            if (response.statusCode.value() == 404) {
+                return null
+            }
+
+            if (response.statusCode.isError) {
+                throw RuntimeException("Failed to get organization with id $organizationId")
+            }
+
+            return response.body
+        } catch (_: NotFound) {
+            return null
         }
 
-        if (response.statusCode.isError) {
-            throw RuntimeException("Failed to get organization with id $organizationId")
-        }
-
-        var organization = response.body ?: throw NotFoundException("Organization with id $organizationId not found")
-
-        return organization
+        return null
     }
 
     fun hireEmployee(organizationId: Long, employee: Employee) {

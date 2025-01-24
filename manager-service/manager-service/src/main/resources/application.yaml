@@ -15,13 +15,13 @@ server:
     include-binding-errors: always
     include-message: always
   port: 8080
-  ssl:
-    enabled: true
-    key-alias: manager-service
-    key-password: admin_pass
-    key-store: classpath:manager-service.jks
-    key-store-password: admin_pass
-    key-store-type: JKS
+#  ssl:
+#    enabled: true
+#    key-alias: manager-service
+#    key-password: admin_pass
+#    key-store: classpath:manager-service.jks
+#    key-store-password: admin_pass
+#    key-store-type: JKS
 
 trust:
   store:

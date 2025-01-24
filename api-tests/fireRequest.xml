@@ -1,0 +1,9 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:gs="http://emented/soa">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <gs:fireAllEmployeesRequest>
+            <gs:organization-id>1</gs:organization-id>
+        </gs:fireAllEmployeesRequest>
+    </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,62 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://emented/soa"
+           targetNamespace="http://emented/soa" elementFormDefault="qualified">
+
+    <xs:element name="pingRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="status" type="xs:string" default="OK"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="pingResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="result" type="xs:string" default="OK"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="employee">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long" nillable="true"/>
+            <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="hireEmployeeRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="organization-id" type="xs:long"/>
+                <xs:element name="employee" type="tns:employee"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="hireEmployeeResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hired" type="xs:boolean"/>
+                <xs:element name="result" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="fireAllEmployeesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="organization-id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="fireAllEmployeesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="fired" type="xs:boolean"/>
+                <xs:element name="result" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

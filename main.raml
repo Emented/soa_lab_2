@@ -1,0 +1,191 @@
+#%RAML 1.0
+types:
+  Employee:
+    description: Работник
+    type: object
+    properties:
+      id?:
+        description: Идентификатор
+        type: number
+        format: int64
+      name:
+        description: Название
+        type: string
+        required: true
+  PingResponse:
+    type: object
+    properties:
+      result?:
+        description: Result
+        type: string
+  ErrorResponse:
+    type: object
+    properties:
+      code:
+        description: Код ошибки
+        type: string
+        required: true
+      message:
+        description: Описание ошибки
+        type: string
+        required: true
+      statusCode:
+        description: HTTP-код статуса
+        type: integer
+        required: true
+annotationTypes:
+  amf-serverDescription:
+    type: any
+  amf-exclusiveMinimum:
+    type: any
+  amf-binding:
+    type: any
+  amf-pattern:
+    type: any
+  amf-payloads:
+    type: any
+  amf-exclusiveMaximum:
+    type: any
+  amf-consumes:
+    type: any
+  amf-additionalProperties:
+    type: any
+  amf-or:
+    type: any
+  amf-url:
+    type: any
+  amf-externalDocs:
+    type: any
+  amf-flow:
+    type: any
+  amf-oasDeprecated:
+    type: any
+  amf-contact:
+    type: any
+  amf-multipleOf:
+    type: any
+  amf-xor:
+    type: any
+  amf-not:
+    type: any
+  amf-callbacks:
+    type: any
+  amf-produces:
+    type: any
+  amf-format:
+    type: any
+  amf-license:
+    type: any
+  amf-summary:
+    type: any
+  amf-responses:
+    type: any
+  amf-maximum:
+    type: any
+  amf-tags:
+    type: any
+  amf-dependencies:
+    type: any
+  amf-readOnly:
+    type: any
+  amf-tuple:
+    type: any
+  amf-examples:
+    type: any
+  amf-collectionFormat:
+    type: any
+  amf-termsOfService:
+    type: any
+  amf-servers:
+    type: any
+  amf-xone:
+    type: any
+  amf-defaultResponse:
+    type: any
+  amf-baseUriParameters:
+    type: any
+  amf-parameters:
+    type: any
+  amf-minimum:
+    type: any
+  amf-recursive:
+    type: any
+  amf-and:
+    type: any
+title: Organization manager API
+baseUri: http://localhost:8080/api
+(amf-serverDescription): Development server
+version: LATEST
+(amf-tags):
+  -
+    name: utility
+    description: Получение состояния приложения
+  -
+    name: organization-manager
+    description: API для менеджеров организаций
+/ping:
+  get:
+    displayName: ping
+    (amf-tags):
+      - utility
+    responses:
+      "200":
+        description: OK
+        body:
+          application/json: PingResponse
+      "500":
+        description: Internal Server Error
+/orgmanager/fire/all/{organizationId}:
+  post:
+    displayName: fireAllOrganizationEmployees
+    (amf-summary): Уволить всех сотрудников
+    (amf-tags):
+      - organization-manager
+    responses:
+      "200":
+        description: OK
+      "400":
+        description: Bad request
+        body:
+          application/json: ErrorResponse
+      "404":
+        description: Not found
+        body:
+          application/json: ErrorResponse
+      "500":
+        description: Internal server error
+        body:
+          application/json: ErrorResponse
+  uriParameters:
+    organizationId:
+      description: Идентификатор организации
+      type: number
+      format: int64
+/orgmanager/hire/{organizationId}:
+  post:
+    displayName: hireEmployeeToOrganization
+    (amf-summary): Нанять нового сотрудника в организацию
+    (amf-tags):
+      - organization-manager
+    body:
+      application/json: Employee
+    responses:
+      "200":
+        description: OK
+      "400":
+        description: Bad request
+        body:
+          application/json: ErrorResponse
+      "404":
+        description: Not found
+        body:
+          application/json: ErrorResponse
+      "500":
+        description: Internal server error
+        body:
+          application/json: ErrorResponse
+  uriParameters:
+    organizationId:
+      description: Идентификатор организации
+      type: number
+      format: int64

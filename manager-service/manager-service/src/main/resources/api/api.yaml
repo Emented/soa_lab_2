@@ -19,6 +19,10 @@ paths:
       responses:
         200:
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingResponse'
         500:
           description: Internal Server Error
 
@@ -119,6 +123,13 @@ components:
           type: string
           minLength: 1
 
+    PingResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          description: Result
+
     ErrorResponse:
       type: object
       required:
@@ -135,6 +146,3 @@ components:
         statusCode:
           type: integer
           description: HTTP-код статуса
-
-
-

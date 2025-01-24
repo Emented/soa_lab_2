@@ -9,7 +9,7 @@ RUN \
   apt-get install -y haproxy
 
 ADD haproxy.cfg /etc/haproxy/haproxy.cfg
-ADD haproxy.pem /etc/ssl/certs/haproxy.pem
+ADD haproxy1.pem /etc/ssl/certs/haproxy.pem
 ADD consul.hcl /consul.hcl
 
 ADD startup.sh /startup.sh
